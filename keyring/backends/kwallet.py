@@ -3,10 +3,10 @@ from __future__ import absolute_import
 import sys
 import os
 
-from ..backend import KeyringBackend
-from ..errors import PasswordDeleteError
-from ..errors import PasswordSetError
 from ..util import properties
+from ..backend import KeyringBackend
+from ..errors import (InitError, PasswordDeleteError,
+                      PasswordSetError)
 
 try:
     import dbus
@@ -96,7 +96,7 @@ class DBusKeyring(KeyringBackend):
         """
         if not self.connected(service):
             # the user pressed "cancel" when prompted to unlock their keyring.
-            return None
+            raise InitError("Cancelled by user")
         if not self.iface.hasEntry(self.handle, service, username, self.appid):
             return None
         password = self.iface.readPassword(
